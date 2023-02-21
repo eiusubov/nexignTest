@@ -5,12 +5,12 @@ import functions.CashbackFunctions;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import utils.VerificationUtils;
 
 import java.math.BigDecimal;
 import java.util.stream.Stream;
@@ -27,14 +27,14 @@ public class CashbackServicePositiveTests extends FunctionalTest {
     }
 
     @ParameterizedTest
-    @MethodSource("lessThanTenDaysData")
+    @MethodSource("lessThanTenDaysTestData")
     public void lessThanTenDaysTest(BigDecimal ticketPrice, long dayToDeparture) {
 
         //Creates special JSON and sends post-request
         Response response = CashbackFunctions.createCashbackServiceJson(ticketPrice, dayToDeparture);
         //Check status code
         int statusCode = response.getStatusCode();
-        Assertions.assertEquals(HttpStatus.SC_OK, statusCode, "Status code received: " + statusCode);
+        VerificationUtils.verifyTwoValues(HttpStatus.SC_OK, statusCode);
         //Check response data
         CashbackFunctions.verifyCashbackServiceJson(response, "0", new BigDecimal("0.00"));
 
@@ -48,7 +48,7 @@ public class CashbackServicePositiveTests extends FunctionalTest {
         Response response = CashbackFunctions.createCashbackServiceJson(ticketPrice, dayToDeparture);
         //Check status code
         int statusCode = response.getStatusCode();
-        Assertions.assertEquals(HttpStatus.SC_OK, statusCode, "Status code received: " + statusCode);
+        VerificationUtils.verifyTwoValues(HttpStatus.SC_OK, statusCode);
         //Calculate expected cashback
         BigDecimal expectedCashback = ticketPrice.divide(new BigDecimal(2));
         System.out.println(expectedCashback);
@@ -66,13 +66,13 @@ public class CashbackServicePositiveTests extends FunctionalTest {
         Response response = CashbackFunctions.createCashbackServiceJson(ticketPrice, dayToDeparture);
         //Check status code
         int statusCode = response.getStatusCode();
-        Assertions.assertEquals(HttpStatus.SC_OK, statusCode, "Status code received: " + statusCode);
+        VerificationUtils.verifyTwoValues(HttpStatus.SC_OK, statusCode);
         //Check response data
         CashbackFunctions.verifyCashbackServiceJson(response, "100", ticketPrice);
 
     }
 
-    private static Stream<Arguments> lessThanTenDaysData() {
+    private static Stream<Arguments> lessThanTenDaysTestData() {
         return Stream.of(
                 Arguments.of(new BigDecimal("123.44"), 0),
                 Arguments.of(new BigDecimal("1000.99"), 10)
